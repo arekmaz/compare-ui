@@ -119,13 +119,26 @@ const cached = runtime.runSync(
       linkSelector:
         '#__next > div > nav > div > div > div.MuiBox-root > div > ul > li:nth-child(2) > div > div > div > ul > li > ul > li > a',
     }),
+    parkUi: scrapeComponentLinks({
+      url: 'https://park-ui.com/docs/panda/components/',
+      base: 'https://park-ui.com',
+      linkSelector:
+        '#sidebar > astro-island:nth-child(1)> aside:nth-child(1) > nav:nth-child(1) > ul.d_flex > li:nth-child(4) > #collapsible\\:\\:r24R4\\: > #collapsible\\:\\:r24R4\\:\\:content > ul:nth-child(1) > li > a',
+    }),
+    reactAria: scrapeComponentLinks({
+      url: 'https://react-spectrum.adobe.com/react-aria/components.html',
+      base: 'https://react-spectrum.adobe.com/',
+      linkSelector:
+        'nav > details:nth-child(8) > ul > li > a',
+    }),
+    
   }).pipe(Effect.cachedWithTTL(isDev ? 0 : '24 hours'))
 );
 
 export const loader = loaderFunction(() => cached);
 
 export default function Index() {
-  const { zagJs, shadcn, arkUi, nextUi, baseUi, arekUi, materialUi } =
+  const { zagJs, shadcn, arkUi, nextUi, baseUi, arekUi, materialUi, parkUi, reactAria } =
     useLoaderData<typeof loader>();
 
   return (
@@ -140,6 +153,8 @@ export default function Index() {
         <ComponentsSection title="BaseUI" {...baseUi} />
         <ComponentsSection title="ArekUI" {...arekUi} />
         <ComponentsSection title="MaterialUI" {...materialUi} />
+        <ComponentsSection title="ParkUI" {...parkUi} />
+        <ComponentsSection title="React Aria" {...reactAria} />
       </div>
     </div>
   );
