@@ -81,7 +81,7 @@ const scrapeGithubDirectoryFileLinks = ({
 
 export const loader = loaderFunction(
   Effect.gen(function* () {
-    const cached = yield* Effect.all([
+    const collectionEffects = [
       scrapeComponentLinks({
         url: 'https://ui.shadcn.com/docs',
         base: 'https://ui.shadcn.com',
@@ -186,13 +186,12 @@ export const loader = loaderFunction(
         })),
         Effect.orElseSucceed(() => null)
       ),
-    ]).pipe(
-      Effect.map((data) => data.filter((a) => a !== null)),
-      Effect.map((a) => a),
-      Effect.cachedWithTTL(isDev ? 0 : '24 hours')
-    );
+    ].map(Effect.cachedWithTTL(isDev ? 0 : '24 hours'));
 
-    return cached.pipe(
+    const cachedEffects = yield* Effect.all(collectionEffects);
+
+    return Effect.all(cachedEffects, { concurrency: 'unbounded' }).pipe(
+      Effect.map((data) => data.filter((a) => a !== null)),
       Effect.map((data) => ({ status: 'success' as const, data })),
       Effect.catchAll((error) =>
         Effect.succeed({ status: 'error' as const, error })
