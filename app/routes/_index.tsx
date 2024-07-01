@@ -186,7 +186,7 @@ export default function Index() {
         </thead>
         <tbody>
           {allPossibilities.map((component) => (
-            <tr key={component}>
+            <tr key={component} className="hover:bg-stone-100">
               <td>{component}</td>
               {collections.map(({ components }, index) => {
                 const matchingComponent = components.find(
