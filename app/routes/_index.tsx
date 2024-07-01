@@ -114,6 +114,23 @@ export const loader = loaderFunction(
         linkSelector:
           'table > tbody > tr > td.react-directory-row-name-cell-large-screen > div > div > div > div > a',
       }),
+      materialUi: scrapeComponentLinks({
+        url: 'https://mui.com/material-ui/all-components/',
+        base: 'https://mui.com',
+        linkSelector:
+          '#__next > div > nav > div > div > div.MuiBox-root > div > ul > li:nth-child(2) > div > div > div > ul > li > ul > li > a',
+      }),
+      reactAria: scrapeComponentLinks({
+        url: 'https://react-spectrum.adobe.com/react-aria/components.html',
+        base: 'https://react-spectrum.adobe.com/',
+        linkSelector: 'nav > details:nth-child(8) > ul > li > a',
+      }),
+      parkUi: scrapeComponentLinks({
+        url: 'https://park-ui.com/docs/panda/components/accordion',
+        base: 'https://park-ui.com',
+        linkSelector:
+          '#sidebar > astro-island:nth-child(1)> aside:nth-child(1) > nav:nth-child(1) > ul.d_flex > li:nth-child(4) > #collapsible\\:\\:r24R4\\: > #collapsible\\:\\:r24R4\\:\\:content > ul:nth-child(1) > li > a',
+      }),
     }).pipe(Effect.cachedWithTTL(isDev ? 0 : '24 hours'));
 
     return cached;
@@ -121,8 +138,17 @@ export const loader = loaderFunction(
 );
 
 export default function Index() {
-  const { zagJs, shadcn, arkUi, nextUi, baseUi, arekUi } =
-    useLoaderData<typeof loader>();
+  const {
+    zagJs,
+    shadcn,
+    arkUi,
+    nextUi,
+    baseUi,
+    arekUi,
+    materialUi,
+    parkUi,
+    reactAria,
+  } = useLoaderData<typeof loader>();
 
   return (
     <div className="font-sans p-4 flex flex-col gap-5">
@@ -135,6 +161,9 @@ export default function Index() {
         <ComponentsSection title="NextUI" {...nextUi} />
         <ComponentsSection title="BaseUI" {...baseUi} />
         <ComponentsSection title="ArekUI" {...arekUi} />
+        <ComponentsSection title="MaterialUI" {...materialUi} />
+        <ComponentsSection title="ParkUI" {...parkUi} />
+        <ComponentsSection title="React Aria" {...reactAria} />
       </div>
     </div>
   );
