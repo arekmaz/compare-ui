@@ -32,11 +32,13 @@ const scrapeComponentLinks = ({
   HttpClientRequest.get(url).pipe(
     HttpClientResponse.text,
     Effect.map((text) => extractElements(text, linkSelector)),
-    Effect.map((links) => {
+    Effect.map((elements) => {
+      const links = elements as HTMLLinkElement[];
+
       const components = links.map((el) => {
-        const link = el as HTMLLinkElement;
+        const link = el;
         return {
-          name: link.textContent!.replaceAll(/\.css.*}/g, ''),
+          name: link.firstChild!.textContent!,
           url: `${base}${link.href}`,
         };
       });
@@ -62,7 +64,7 @@ const scrapeGithubDirectoryFileLinks = ({
         const link = el as HTMLLinkElement;
         const pascalName = String.snakeToPascal(
           String.kebabToSnake(
-            link.textContent!.replaceAll(/\.css.*}/g, '').replace(/\..+$/, '')
+            link.firstChild!.textContent!.replace(/\..+$/, '')
           )
         ).replace(/\d+$/, '');
 
@@ -119,7 +121,17 @@ export const loader = loaderFunction(
         base: 'https://mui.com',
         linkSelector:
           '#__next > div > nav > div > div > div.MuiBox-root > div > ul > li:nth-child(2) > div > div > div > ul > li > ul > li > a',
-      }),
+      }).pipe(
+        Effect.map(({ components, ...rest }) => ({
+          ...rest,
+          components: components.filter(
+            (component) =>
+              ![/about-the-lab/, /react-use-media-query/].some((re) =>
+                re.test(component.url)
+              )
+          ),
+        }))
+      ),
       reactAria: scrapeComponentLinks({
         url: 'https://react-spectrum.adobe.com/react-aria/components.html',
         base: 'https://react-spectrum.adobe.com/',
