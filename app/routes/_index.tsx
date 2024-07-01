@@ -113,13 +113,19 @@ const cached = runtime.runSync(
       linkSelector:
         'table > tbody > tr > td.react-directory-row-name-cell-large-screen > div > div > div > div > a',
     }),
+    materialUi: scrapeComponentLinks({
+      url: 'https://mui.com/material-ui/all-components/',
+      base: 'https://mui.com',
+      linkSelector:
+        '#__next > div > nav > div > div > div.MuiBox-root > div > ul > li:nth-child(2) > div > div > div > ul > li > ul > li > a',
+    }),
   }).pipe(Effect.cachedWithTTL(isDev ? 0 : '24 hours'))
 );
 
 export const loader = loaderFunction(() => cached);
 
 export default function Index() {
-  const { zagJs, shadcn, arkUi, nextUi, baseUi, arekUi } =
+  const { zagJs, shadcn, arkUi, nextUi, baseUi, arekUi, materialUi } =
     useLoaderData<typeof loader>();
 
   return (
@@ -133,6 +139,7 @@ export default function Index() {
         <ComponentsSection title="NextUI" {...nextUi} />
         <ComponentsSection title="BaseUI" {...baseUi} />
         <ComponentsSection title="ArekUI" {...arekUi} />
+        <ComponentsSection title="MaterialUI" {...materialUi} />
       </div>
     </div>
   );
