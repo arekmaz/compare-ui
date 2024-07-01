@@ -65,6 +65,35 @@ export const loader = loaderFunction(() =>
   })
 );
 
+const ComponentsSection = (props: {
+  components: { name: string; url: string }[];
+  loadedAt: string;
+  title: string;
+}) => {
+  const { loadedAt, components, title } = props;
+
+  return (
+    <section>
+      <h3 className="text-3xl">
+        {title} {components.length}
+      </h3>
+      <span className="text-3xl">Loaded at {loadedAt}</span>
+      <ul className="flex flex-col gap-2">
+        {components.map((component) => (
+          <a
+            key={component.url}
+            href={component.url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {component.name}
+          </a>
+        ))}
+      </ul>
+    </section>
+  );
+};
+
 export default function Index() {
   const { zagJs, shadcn, arkUi } = useLoaderData<typeof loader>();
 
@@ -73,56 +102,9 @@ export default function Index() {
       <h1 className="text-5xl">Compare UI effect</h1>
 
       <div className="flex gap-5">
-        <section>
-          <h3 className="text-3xl">Shadcn {shadcn.components.length}</h3>
-          <span className="text-3xl">Loaded at {shadcn.loadedAt}</span>
-          <ul className="flex flex-col gap-2">
-            {shadcn.components.map((component) => (
-              <a
-                key={component.url}
-                href={component.url}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {component.name}
-              </a>
-            ))}
-          </ul>
-        </section>
-
-        <section>
-          <h3 className="text-3xl">Ark UI {arkUi.components.length}</h3>
-          <span className="text-3xl">Loaded at {arkUi.loadedAt}</span>
-          <ul className="flex flex-col gap-2">
-            {arkUi.components.map((component) => (
-              <a
-                key={component.url}
-                href={component.url}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {component.name}
-              </a>
-            ))}
-          </ul>
-        </section>
-
-        <section>
-          <h3 className="text-3xl">Zag Js {zagJs.components.length}</h3>
-          <span className="text-3xl">Loaded at {zagJs.loadedAt}</span>
-          <ul className="flex flex-col gap-2">
-            {zagJs.components.map((component) => (
-              <a
-                key={component.url}
-                href={component.url}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {component.name}
-              </a>
-            ))}
-          </ul>
-        </section>
+        <ComponentsSection title="Shadcn" {...shadcn} />
+        <ComponentsSection title="Ark UI" {...arkUi} />
+        <ComponentsSection title="ZagJS" {...zagJs} />
       </div>
     </div>
   );
