@@ -2,7 +2,7 @@ import type { MetaFunction } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { Effect, String } from 'effect';
 import { JSDOM } from 'jsdom';
-import { loaderFunction, runtime } from '~/Remix.server';
+import { loaderFunction } from '~/Remix.server';
 import { HttpClientRequest, HttpClientResponse } from '@effect/platform';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -76,47 +76,49 @@ const scrapeGithubDirectoryFileLinks = ({
     })
   );
 
-const cached = runtime.runSync(
-  Effect.all({
-    shadcn: scrapeComponentLinks({
-      url: 'https://ui.shadcn.com/docs',
-      base: 'https://ui.shadcn.com',
-      linkSelector:
-        'body > div:nth-child(2) > div > main > div > div > aside > div > div > div > div > div:nth-child(2) > div > a',
-    }),
-    arkUi: scrapeComponentLinks({
-      url: 'https://ark-ui.com/react/docs/overview/introduction',
-      base: 'https://ark-ui.com',
-      linkSelector:
-        'aside > nav > ul > li:nth-child(3) > div > div > ul > li > a',
-    }),
-    zagJs: scrapeComponentLinks({
-      url: 'https://zagjs.com/overview/introduction',
-      base: 'https://zagjs.com',
-      linkSelector: 'nav > ul > li:nth-child(2) > ul > li > a',
-    }),
-    nextUi: scrapeComponentLinks({
-      url: 'https://nextui.org/docs/guide/introduction',
-      base: 'https://nextui.org',
-      linkSelector:
-        '#app-container > main > div > div.hidden.overflow-visible.relative.z-10.lg\\:block.lg\\:col-span-2.mt-8.pr-4 > div > div > div > div > ul:nth-child(4) > div.flex.flex-col.gap-3.items-start > li > div > a',
-    }),
-    baseUi: scrapeComponentLinks({
-      url: 'https://mui.com/base-ui/all-components/',
-      base: 'https://mui.com',
-      linkSelector:
-        '#__next > div > nav > div > div > div.MuiBox-root > div > ul > li:nth-child(2) > div > div > div > ul > li > ul > li > a',
-    }),
-    arekUi: scrapeGithubDirectoryFileLinks({
-      url: 'https://github.com/arekmaz/arek-ui/tree/main/app/components/ui',
-      base: 'https://arek-ui.fly.dev/?q=',
-      linkSelector:
-        'table > tbody > tr > td.react-directory-row-name-cell-large-screen > div > div > div > div > a',
-    }),
-  }).pipe(Effect.cachedWithTTL(isDev ? 0 : '24 hours'))
-);
+export const loader = loaderFunction(
+  Effect.gen(function* () {
+    const cached = yield* Effect.all({
+      shadcn: scrapeComponentLinks({
+        url: 'https://ui.shadcn.com/docs',
+        base: 'https://ui.shadcn.com',
+        linkSelector:
+          'body > div:nth-child(2) > div > main > div > div > aside > div > div > div > div > div:nth-child(2) > div > a',
+      }),
+      arkUi: scrapeComponentLinks({
+        url: 'https://ark-ui.com/react/docs/overview/introduction',
+        base: 'https://ark-ui.com',
+        linkSelector:
+          'aside > nav > ul > li:nth-child(3) > div > div > ul > li > a',
+      }),
+      zagJs: scrapeComponentLinks({
+        url: 'https://zagjs.com/overview/introduction',
+        base: 'https://zagjs.com',
+        linkSelector: 'nav > ul > li:nth-child(2) > ul > li > a',
+      }),
+      nextUi: scrapeComponentLinks({
+        url: 'https://nextui.org/docs/guide/introduction',
+        base: 'https://nextui.org',
+        linkSelector:
+          '#app-container > main > div > div.hidden.overflow-visible.relative.z-10.lg\\:block.lg\\:col-span-2.mt-8.pr-4 > div > div > div > div > ul:nth-child(4) > div.flex.flex-col.gap-3.items-start > li > div > a',
+      }),
+      baseUi: scrapeComponentLinks({
+        url: 'https://mui.com/base-ui/all-components/',
+        base: 'https://mui.com',
+        linkSelector:
+          '#__next > div > nav > div > div > div.MuiBox-root > div > ul > li:nth-child(2) > div > div > div > ul > li > ul > li > a',
+      }),
+      arekUi: scrapeGithubDirectoryFileLinks({
+        url: 'https://github.com/arekmaz/arek-ui/tree/main/app/components/ui',
+        base: 'https://arek-ui.fly.dev/?q=',
+        linkSelector:
+          'table > tbody > tr > td.react-directory-row-name-cell-large-screen > div > div > div > div > a',
+      }),
+    }).pipe(Effect.cachedWithTTL(isDev ? 0 : '24 hours'));
 
-export const loader = loaderFunction(() => cached);
+    return cached;
+  })
+);
 
 export default function Index() {
   const { zagJs, shadcn, arkUi, nextUi, baseUi, arekUi } =
