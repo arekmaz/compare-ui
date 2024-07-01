@@ -87,36 +87,54 @@ export const loader = loaderFunction(
         base: 'https://ui.shadcn.com',
         linkSelector:
           'body > div:nth-child(2) > div > main > div > div > aside > div > div > div > div > div:nth-child(2) > div > a',
-      }).pipe(Effect.map((data) => ({ ...data, name: 'Shadcn' }))),
+      }).pipe(
+        Effect.map((data) => ({ ...data, name: 'Shadcn' })),
+        Effect.orElseSucceed(() => null)
+      ),
       scrapeComponentLinks({
         url: 'https://ark-ui.com/react/docs/overview/introduction',
         base: 'https://ark-ui.com',
         linkSelector:
           'aside > nav > ul > li:nth-child(3) > div > div > ul > li > a',
-      }).pipe(Effect.map((data) => ({ ...data, name: 'ArkUI' }))),
+      }).pipe(
+        Effect.map((data) => ({ ...data, name: 'ArkUI' })),
+        Effect.orElseSucceed(() => null)
+      ),
       scrapeComponentLinks({
         url: 'https://zagjs.com/overview/introduction',
         base: 'https://zagjs.com',
         linkSelector: 'nav > ul > li:nth-child(2) > ul > li > a',
-      }).pipe(Effect.map((data) => ({ ...data, name: 'ZagJS' }))),
+      }).pipe(
+        Effect.map((data) => ({ ...data, name: 'ZagJS' })),
+        Effect.orElseSucceed(() => null)
+      ),
       scrapeComponentLinks({
         url: 'https://nextui.org/docs/guide/introduction',
         base: 'https://nextui.org',
         linkSelector:
           '#app-container > main > div > div.hidden.overflow-visible.relative.z-10.lg\\:block.lg\\:col-span-2.mt-8.pr-4 > div > div > div > div > ul:nth-child(4) > div.flex.flex-col.gap-3.items-start > li > div > a',
-      }).pipe(Effect.map((data) => ({ ...data, name: 'Next UI' }))),
+      }).pipe(
+        Effect.map((data) => ({ ...data, name: 'Next UI' })),
+        Effect.orElseSucceed(() => null)
+      ),
       scrapeComponentLinks({
         url: 'https://mui.com/base-ui/all-components/',
         base: 'https://mui.com',
         linkSelector:
           '#__next > div > nav > div > div > div.MuiBox-root > div > ul > li:nth-child(2) > div > div > div > ul > li > ul > li > a',
-      }).pipe(Effect.map((data) => ({ ...data, name: 'Base UI' }))),
+      }).pipe(
+        Effect.map((data) => ({ ...data, name: 'Base UI' })),
+        Effect.orElseSucceed(() => null)
+      ),
       scrapeGithubDirectoryFileLinks({
         url: 'https://github.com/arekmaz/arek-ui/tree/main/app/components/ui',
         base: 'https://arek-ui.fly.dev/?q=',
         linkSelector:
           'table > tbody > tr > td.react-directory-row-name-cell-large-screen > div > div > div > div > a',
-      }).pipe(Effect.map((data) => ({ ...data, name: 'Arek UI' }))),
+      }).pipe(
+        Effect.map((data) => ({ ...data, name: 'Arek UI' })),
+        Effect.orElseSucceed(() => null)
+      ),
       scrapeComponentLinks({
         url: 'https://mui.com/material-ui/all-components/',
         base: 'https://mui.com',
@@ -132,37 +150,79 @@ export const loader = loaderFunction(
                 re.test(component.url)
               )
           ),
-        }))
+        })),
+        Effect.orElseSucceed(() => null)
       ),
       scrapeComponentLinks({
         url: 'https://react-spectrum.adobe.com/react-aria/components.html',
         base: 'https://react-spectrum.adobe.com/',
         linkSelector: 'nav > details:nth-child(8) > ul > li > a',
-      }).pipe(Effect.map((data) => ({ ...data, name: 'React Aria' }))),
+      }).pipe(
+        Effect.map((data) => ({ ...data, name: 'React Aria' })),
+        Effect.orElseSucceed(() => null)
+      ),
       scrapeComponentLinks({
         url: 'https://park-ui.com/docs/panda/components/accordion',
         base: 'https://park-ui.com',
         linkSelector:
           '#sidebar > astro-island:nth-child(1)> aside:nth-child(1) > nav:nth-child(1) > ul.d_flex > li:nth-child(4) > #collapsible\\:\\:r24R4\\: > #collapsible\\:\\:r24R4\\:\\:content > ul:nth-child(1) > li > a',
-      }).pipe(Effect.map((data) => ({ ...data, name: 'Park UI' }))),
-    ]).pipe(Effect.cachedWithTTL(isDev ? 0 : '24 hours'));
+      }).pipe(
+        Effect.map((data) => ({ ...data, name: 'Park UI' })),
+        Effect.orElseSucceed(() => null)
+      ),
+      scrapeComponentLinks({
+        url: 'https://react-bootstrap.github.io/docs/components/accordion',
+        base: 'https://react-bootstrap.github.io',
+        linkSelector:
+          '#__docusaurus_skipToContent_fallback > div > div > aside > div > div > nav > ul > li:nth-child(4) > ul > li > a',
+      }).pipe(
+        Effect.map((data) => ({
+          ...data,
+          name: 'React Boostrap',
+          components: data.components.map(({ name, ...cmp }) => ({
+            ...cmp,
+            name: name.replace(/s$/, ''),
+          })),
+        })),
+        Effect.orElseSucceed(() => null)
+      ),
+    ]).pipe(
+      Effect.map((data) => data.filter((a) => a !== null)),
+      Effect.map((a) => a),
+      Effect.cachedWithTTL(isDev ? 0 : '24 hours')
+    );
 
-    return cached;
+    return cached.pipe(
+      Effect.map((data) => ({ status: 'success' as const, data })),
+      Effect.catchAll((error) =>
+        Effect.succeed({ status: 'error' as const, error })
+      )
+    );
   })
 );
 
 export default function Index() {
-  const collections = useLoaderData<typeof loader>();
+  const loaderData = useLoaderData<typeof loader>();
 
   const allPossibilities = useMemo(() => {
+    if (loaderData.status === 'error') {
+      return [];
+    }
+
     return Array.from(
       new Set(
-        collections.flatMap(({ components }) =>
+        loaderData.data.flatMap(({ components }) =>
           components.map((component) => component.name)
         )
       )
     );
-  }, [collections]);
+  }, [loaderData]);
+
+  if (loaderData.status === 'error') {
+    return <div>ups, error</div>;
+  }
+
+  const collections = loaderData.data;
 
   return (
     <div className="font-sans p-4 flex flex-col gap-5">
