@@ -229,15 +229,17 @@ export default function Index() {
       <table className="text-center">
         <thead className="sticky top-0 bg-white/90 py-2">
           <tr>
-            <th></th>
+            <th className="sticky left-0 bg-white"></th>
             {collections.map((collection) => (
               <th key={collection.name}>
                 {collection.name} {collection.components.length}
               </th>
             ))}
           </tr>
-          <tr className="text-xs text-stone-400">
-            <th className="text-black text-base">Component</th>
+          <tr className="text-xs text-stone-400 ">
+            <th className="text-black text-base sticky left-0 top-0 bg-white z-1">
+              Component
+            </th>
             {collections.map((collection) => (
               <th key={collection.name}>{collection.loadedAt}</th>
             ))}
@@ -246,7 +248,7 @@ export default function Index() {
         <tbody>
           {allPossibilities.map((component) => (
             <tr key={component} className="hover:bg-stone-100">
-              <td>{component}</td>
+              <td className="sticky left-0 bg-white">{component}</td>
               {collections.map(({ components }, index) => {
                 const matchingComponent = components.find(
                   (cmp) => cmp.name === component
