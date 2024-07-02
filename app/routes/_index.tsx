@@ -1,10 +1,11 @@
 import type { MetaFunction } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { useLoaderData, useSearchParams } from '@remix-run/react';
 import { Effect, String } from 'effect';
 import { JSDOM } from 'jsdom';
 import { loaderFunction } from '~/Remix.server';
 import { HttpClientRequest, HttpClientResponse } from '@effect/platform';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState, useTransition } from 'react';
+import { matchSorter } from 'match-sorter';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -203,7 +204,14 @@ export const loader = loaderFunction(
 export default function Index() {
   const loaderData = useLoaderData<typeof loader>();
 
-  const allPossibilities = useMemo(() => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [, startTransition] = useTransition();
+
+  const [searchPhrase, setSearchPhrase] = useState(() => {
+    return searchParams.get('s') ?? '';
+  });
+
+  const allComponentNames = useMemo(() => {
     if (loaderData.status === 'error') {
       return [];
     }
@@ -215,7 +223,28 @@ export default function Index() {
         )
       )
     );
-  }, [loaderData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const [visibleComponents, setVisibleComponents] = useState(() => {
+    if (loaderData.status === 'error') {
+      return [];
+    }
+
+    return matchSorter(allComponentNames, searchPhrase);
+  });
+
+  useEffect(() => {
+    setTimeout(() => {
+      setSearchParams((p) => ({ ...p, s: searchPhrase }));
+
+      startTransition(() => {
+        const matches = matchSorter(allComponentNames, searchPhrase);
+        setVisibleComponents(matches.length > 0 ? matches : allComponentNames);
+      });
+    }, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchPhrase]);
 
   if (loaderData.status === 'error') {
     return <div>ups, error</div>;
@@ -225,19 +254,29 @@ export default function Index() {
 
   return (
     <div className="font-sans p-4 flex flex-col gap-5">
-      <h1 className="text-5xl text-center">Compare UI</h1>
       <table className="text-center">
         <thead className="sticky top-0 bg-white/90 py-2">
           <tr>
-            <th className="sticky left-0 bg-white"></th>
+            <th className="sticky left-0 bg-white">
+              <input
+                value={searchPhrase}
+                onChange={(e) => {
+                  setSearchPhrase(e.target.value);
+                }}
+                placeholder="Search"
+                className="rounded-md border border-stone-600 px-1 py-2"
+                // eslint-disable-next-line jsx-a11y/no-autofocus
+                autoFocus
+              />
+            </th>
             {collections.map((collection) => (
               <th key={collection.name}>
                 {collection.name} {collection.components.length}
               </th>
             ))}
           </tr>
-          <tr className="text-xs text-stone-400 ">
-            <th className="text-black text-base sticky left-0 top-0 bg-white z-1">
+          <tr className="text-xs text-stone-400">
+            <th className="text-black text-base sticky left-0 top-0 bg-white z-10">
               Component
             </th>
             {collections.map((collection) => (
@@ -246,9 +285,9 @@ export default function Index() {
           </tr>
         </thead>
         <tbody>
-          {allPossibilities.map((component) => (
+          {visibleComponents.map((component) => (
             <tr key={component} className="hover:bg-stone-100">
-              <td className="sticky left-0 bg-white">{component}</td>
+              <td className="sticky left-0 bg-white z-0">{component}</td>
               {collections.map(({ components }, index) => {
                 const matchingComponent = components.find(
                   (cmp) => cmp.name === component
