@@ -276,7 +276,7 @@ const antDesign = scrapeGithubDirectoryFolderLinks({
   Effect.map(({ components, ...rest }) => ({
     ...rest,
     components: components
-      .filter(({ name }) => name.startsWith('_'))
+      .filter(({ name }) => !name.startsWith('_'))
       .map(({ name, ...c }) => ({
         ...c,
         name: splitCamelcase(name),
