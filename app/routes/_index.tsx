@@ -260,6 +260,16 @@ const themeUi = scrapeComponentLinks({
   Effect.orElseSucceed(() => null)
 );
 
+const chakraUi = scrapeComponentLinks({
+  url: 'https://v2.chakra-ui.com/docs/components/accordion',
+  base: 'https://v2.chakra-ui.com',
+  linkSelector:
+    'nav.sidebar-content > div > div > div > a',
+}).pipe(
+  Effect.map((data) => ({ ...data, name: 'Chakra UI' })),
+  Effect.orElseSucceed(() => null)
+);
+
 export const loader = loaderFunction(
   Effect.gen(function* () {
     const collectionEffects = [
@@ -277,6 +287,7 @@ export const loader = loaderFunction(
       semanticUi,
       blueprintJs,
       themeUi,
+      chakraUi,
     ].map((effect) =>
       effect.pipe(
         Effect.retry({
