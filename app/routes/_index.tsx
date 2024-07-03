@@ -221,6 +221,16 @@ const antDesign = scrapeComponentLinks({
   Effect.orElseSucceed(() => null)
 );
 
+const semanticUi = scrapeComponentLinks({
+  url: 'https://semantic-ui.com/elements/button.html',
+  base: 'https://semantic-ui.com/',
+  linkSelector:
+    'div.toc > div:nth-child(1) > div:nth-child(n+7):nth-child(-n+10) > div:nth-child(2) > a',
+}).pipe(
+  Effect.map((data) => ({ ...data, name: 'Semantic UI' })),
+  Effect.orElseSucceed(() => null)
+);
+
 export const loader = loaderFunction(
   Effect.gen(function* () {
     const collectionEffects = [
@@ -235,6 +245,7 @@ export const loader = loaderFunction(
       parkUi,
       reactBootstrap,
       antDesign,
+      semanticUi,
     ].map((effect) =>
       effect.pipe(
         Effect.retry({
