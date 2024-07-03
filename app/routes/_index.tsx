@@ -199,6 +199,19 @@ const arekUi = scrapeGithubDirectoryFileLinks({
   }))
 );
 
+const headlessUi = scrapeComponentLinks({
+  url: 'https://headlessui.com/',
+  base: 'https://headlessui.com/react/',
+  linkSelector:
+    '#__next > div > div > main > div > div > div > a > div:nth-child(2)',
+}).pipe(
+  Effect.map((data) => ({
+    ...data,
+    name: 'Headless UI',
+    site: 'https://headlessui.com',
+  }))
+);
+
 const materialUi = scrapeComponentLinks({
   url: 'https://mui.com/material-ui/all-components/',
   base: 'https://mui.com',
@@ -367,6 +380,7 @@ export const loader = loaderFunction(
       blueprintJs,
       themeUi,
       chakraUi,
+      headlessUi,
     ].map((effect) =>
       effect.pipe(
         Effect.map(({ components, ...rest }) => ({
