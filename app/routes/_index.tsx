@@ -208,7 +208,7 @@ const materialUi = scrapeComponentLinks({
   Effect.map(({ components, ...rest }) => ({
     ...rest,
     name: 'Material UI',
-    site: 'https://ant.design/',
+    site: 'https://mui.com',
     components: components.filter(
       (component) =>
         ![/about-the-lab/, /react-use-media-query/].some((re) =>
@@ -390,7 +390,11 @@ export const loader = loaderFunction(
     const cachedEffects = yield* Effect.all(collectionEffects);
 
     return Effect.all(cachedEffects, { concurrency: 'unbounded' }).pipe(
-      Effect.map((data) => data.filter((a) => a !== null)),
+      Effect.map((data) =>
+        data
+          .filter((a) => a !== null)
+          .sort((a, b) => (a.name > b.name ? 1 : -1))
+      ),
       Effect.map((data) => ({ status: 'success' as const, data })),
       Effect.catchAll((error) =>
         Effect.succeed({ status: 'error' as const, error })
@@ -470,7 +474,14 @@ export default function Index() {
             {collections.map((collection) => (
               <th key={collection.name}>
                 <div className="flex flex-col items-center gap-1">
-                  <span className="text-lg/4">{collection.name}</span>
+                  <a
+                    href={collection.site}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-lg/4"
+                  >
+                    {collection.name}
+                  </a>
                   <span className="text-xs text-stone-500 font-thin">
                     {collection.components.length}
                   </span>
