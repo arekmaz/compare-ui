@@ -84,38 +84,100 @@ const scrapeGithubDirectoryFileLinks = ({
     })
   );
 
+const scrapeGithubDirectoryFolderLinks = ({
+  url,
+  base,
+  linkSelector,
+}: {
+  url: string;
+  linkSelector: string;
+  base: string;
+}) =>
+  HttpClientRequest.get(url).pipe(
+    HttpClientResponse.text,
+    Effect.map((text) => extractElements(text, linkSelector)),
+    Effect.map((links) =>
+      links.filter((link) => !link?.firstChild?.textContent?.includes('.'))
+    ),
+    Effect.map((links) => {
+      const components = links.map((el) => {
+        const link = el as HTMLLinkElement;
+        const pascalName = String.snakeToPascal(
+          String.kebabToSnake(link.firstChild!.textContent!)
+        ).replace(/\d+$/, '');
+
+        return {
+          name: pascalName,
+          url: `${base}${pascalName}`,
+        };
+      });
+
+      return { loadedAt: new Date(), components };
+    })
+  );
+
 const shadCn = scrapeComponentLinks({
   url: 'https://ui.shadcn.com/docs',
   base: 'https://ui.shadcn.com',
   linkSelector:
     'body > div:nth-child(2) > div > main > div > div > aside > div > div > div > div > div:nth-child(2) > div > a',
-}).pipe(Effect.map((data) => ({ ...data, name: 'Shadcn' })));
+}).pipe(
+  Effect.map((data) => ({
+    ...data,
+    name: 'Shadcn',
+    site: 'https://ui.shadcn.com',
+  }))
+);
 
 const arkUi = scrapeComponentLinks({
   url: 'https://ark-ui.com/react/docs/overview/introduction',
   base: 'https://ark-ui.com',
   linkSelector: 'aside > nav > ul > li:nth-child(3) > div > div > ul > li > a',
-}).pipe(Effect.map((data) => ({ ...data, name: 'ArkUI' })));
+}).pipe(
+  Effect.map((data) => ({
+    ...data,
+    name: 'ArkUI',
+    site: 'https://ark-ui.com',
+  }))
+);
 
 const zagJs = scrapeComponentLinks({
   url: 'https://zagjs.com/overview/introduction',
   base: 'https://zagjs.com',
   linkSelector: 'nav > ul > li:nth-child(2) > ul > li > a',
-}).pipe(Effect.map((data) => ({ ...data, name: 'ZagJS' })));
+}).pipe(
+  Effect.map((data) => ({
+    ...data,
+    name: 'ZagJS',
+    site: 'https://zagjs.com',
+  }))
+);
 
 const nextUi = scrapeComponentLinks({
   url: 'https://nextui.org/docs/guide/introduction',
   base: 'https://nextui.org',
   linkSelector:
     '#app-container > main > div > div.hidden.overflow-visible.relative.z-10.lg\\:block.lg\\:col-span-2.mt-8.pr-4 > div > div > div > div > ul:nth-child(4) > div.flex.flex-col.gap-3.items-start > li > div > a',
-}).pipe(Effect.map((data) => ({ ...data, name: 'Next UI' })));
+}).pipe(
+  Effect.map((data) => ({
+    ...data,
+    name: 'Next UI',
+    site: 'https://nextui.org',
+  }))
+);
 
 const baseUi = scrapeComponentLinks({
   url: 'https://mui.com/base-ui/all-components/',
   base: 'https://mui.com',
   linkSelector:
     '#__next > div > nav > div > div > div.MuiBox-root > div > ul > li:nth-child(2) > div > div > div > ul > li > ul > li > a',
-}).pipe(Effect.map((data) => ({ ...data, name: 'Base UI' })));
+}).pipe(
+  Effect.map((data) => ({
+    ...data,
+    name: 'Base UI',
+    site: 'https://mui.com/base-ui',
+  }))
+);
 
 const arekUi = scrapeGithubDirectoryFileLinks({
   url: 'https://github.com/arekmaz/arek-ui/tree/main/app/components/ui',
@@ -130,7 +192,11 @@ const arekUi = scrapeGithubDirectoryFileLinks({
       name: splitCamelcase(name),
     })),
   })),
-  Effect.map((data) => ({ ...data, name: 'Arek UI' }))
+  Effect.map((data) => ({
+    ...data,
+    name: 'Arek UI',
+    site: 'https://arek-ui.fly.dev/',
+  }))
 );
 
 const materialUi = scrapeComponentLinks({
@@ -142,6 +208,7 @@ const materialUi = scrapeComponentLinks({
   Effect.map(({ components, ...rest }) => ({
     ...rest,
     name: 'Material UI',
+    site: 'https://ant.design/',
     components: components.filter(
       (component) =>
         ![/about-the-lab/, /react-use-media-query/].some((re) =>
@@ -163,7 +230,11 @@ const reactAria = scrapeComponentLinks({
       name: splitCamelcase(name),
     })),
   })),
-  Effect.map((data) => ({ ...data, name: 'React Aria' }))
+  Effect.map((data) => ({
+    ...data,
+    name: 'React Aria',
+    site: 'https://react-spectrum.adobe.com/react-aria',
+  }))
 );
 
 const parkUi = scrapeComponentLinks({
@@ -171,7 +242,13 @@ const parkUi = scrapeComponentLinks({
   base: 'https://park-ui.com',
   linkSelector:
     '#sidebar > astro-island:nth-child(1)> aside:nth-child(1) > nav:nth-child(1) > ul.d_flex > li:nth-child(4) > #collapsible\\:\\:r24R4\\: > #collapsible\\:\\:r24R4\\:\\:content > ul:nth-child(1) > li > a',
-}).pipe(Effect.map((data) => ({ ...data, name: 'Park UI' })));
+}).pipe(
+  Effect.map((data) => ({
+    ...data,
+    name: 'Park UI',
+    site: 'https://park-ui.com',
+  }))
+);
 
 const reactBootstrap = scrapeComponentLinks({
   url: 'https://react-bootstrap.github.io/docs/components/accordion',
@@ -182,6 +259,7 @@ const reactBootstrap = scrapeComponentLinks({
   Effect.map((data) => ({
     ...data,
     name: 'React Boostrap',
+    site: 'https://react-bootstrap.github.io',
     components: data.components.map(({ name, ...cmp }) => ({
       ...cmp,
       name: capitalizeSubsequentWords(name.replace(/s$/, '')),
@@ -189,25 +267,60 @@ const reactBootstrap = scrapeComponentLinks({
   }))
 );
 
-const antDesign = scrapeComponentLinks({
-  url: 'https://ant.design/components/button',
+const antDesign = scrapeGithubDirectoryFolderLinks({
+  url: 'https://github.com/ant-design/ant-design/tree/master/components',
   base: 'https://ant.design/',
-  linkSelector: 'div > section > ul > li > ul > li > span > a',
-}).pipe(Effect.map((data) => ({ ...data, name: 'Ant Design' })));
+  linkSelector:
+    'table > tbody > tr > td.react-directory-row-name-cell-large-screen > div > div > div > div > a',
+}).pipe(
+  Effect.map(({ components, ...rest }) => ({
+    ...rest,
+    components: components
+      .filter(({ name }) => name.startsWith('_'))
+      .map(({ name, ...c }) => ({
+        ...c,
+        name: splitCamelcase(name),
+      })),
+  })),
+  Effect.map((data) => ({
+    ...data,
+    name: 'Ant Design',
+    site: 'https://ant.design/',
+  }))
+);
 
 const semanticUi = scrapeComponentLinks({
   url: 'https://semantic-ui.com/elements/button.html',
   base: 'https://semantic-ui.com',
   linkSelector:
     'div.toc > div:nth-child(1) > div:nth-child(n+7):nth-child(-n+10) > div:nth-child(2) > a',
-}).pipe(Effect.map((data) => ({ ...data, name: 'Semantic UI' })));
+}).pipe(
+  Effect.map((data) => ({
+    ...data,
+    name: 'Semantic UI',
+    site: 'https://semantic-ui.com',
+  }))
+);
 
-const blueprintJs = scrapeComponentLinks({
-  url: 'https://blueprintjs.com/docs/#core/components/buttons',
-  base: 'https://blueprintjs.com',
+const blueprintJs = scrapeGithubDirectoryFolderLinks({
+  url: 'https://github.com/palantir/blueprint/tree/develop/packages/core/src/components',
+  base: 'https://blueprintjs.com/docs',
   linkSelector:
-    'div.docs-nav-wrapper > div.docs-nav > ul.docs-nav-menu:nth-child(7) > li:nth-child(2) > ul:nth-child(2) > li:nth-child(6)> ul:nth-child(2) > li > a.docs-nav-expanded',
-}).pipe(Effect.map((data) => ({ ...data, name: 'Blueprint Js' })));
+    'table > tbody > tr > td.react-directory-row-name-cell-large-screen > div > div > div > div > a',
+}).pipe(
+  Effect.map(({ components, ...rest }) => ({
+    ...rest,
+    components: components.map(({ name, ...c }) => ({
+      ...c,
+      name: splitCamelcase(name),
+    })),
+  })),
+  Effect.map((data) => ({
+    ...data,
+    name: 'Blueprint JS',
+    site: 'https://blueprintjs.com',
+  }))
+);
 
 const themeUi = scrapeComponentLinks({
   url: 'https://theme-ui.com/components/alert',
@@ -217,6 +330,7 @@ const themeUi = scrapeComponentLinks({
   Effect.map(({ components, ...rest }) => ({
     ...rest,
     name: 'Theme UI',
+    site: 'https://theme-ui.com',
     components: components.filter(
       (component) => ![/variants/].some((re) => re.test(component.url))
     ),
@@ -224,10 +338,16 @@ const themeUi = scrapeComponentLinks({
 );
 
 const chakraUi = scrapeComponentLinks({
-  url: 'https://v2.chakra-ui.com/docs/components/accordion',
-  base: 'https://v2.chakra-ui.com',
+  url: 'https://chakra-ui.com/docs/components/accordion',
+  base: 'https://chakra-ui.com',
   linkSelector: 'nav.sidebar-content > div > div > div > a',
-}).pipe(Effect.map((data) => ({ ...data, name: 'Chakra UI' })));
+}).pipe(
+  Effect.map((data) => ({
+    ...data,
+    name: 'Chakra UI',
+    site: 'https://chakra-ui.com',
+  }))
+);
 
 export const loader = loaderFunction(
   Effect.gen(function* () {
@@ -349,16 +469,23 @@ export default function Index() {
             </th>
             {collections.map((collection) => (
               <th key={collection.name}>
-                {collection.name} {collection.components.length}
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-lg/4">{collection.name}</span>
+                  <span className="text-xs text-stone-500 font-thin">
+                    {collection.components.length}
+                  </span>
+                </div>
               </th>
             ))}
           </tr>
-          <tr className="text-xs text-stone-400">
+          <tr className="text-stone-400">
             <th className="text-black text-base sticky left-0 top-0 bg-white z-10">
               Component
             </th>
             {collections.map((collection) => (
-              <th key={collection.name}>{collection.loadedAt}</th>
+              <th className="text-[8px] font-thin" key={collection.name}>
+                {collection.loadedAt}
+              </th>
             ))}
           </tr>
         </thead>
