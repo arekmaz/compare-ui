@@ -89,48 +89,33 @@ const shadCn = scrapeComponentLinks({
   base: 'https://ui.shadcn.com',
   linkSelector:
     'body > div:nth-child(2) > div > main > div > div > aside > div > div > div > div > div:nth-child(2) > div > a',
-}).pipe(
-  Effect.map((data) => ({ ...data, name: 'Shadcn' })),
-  Effect.orElseSucceed(() => null)
-);
+}).pipe(Effect.map((data) => ({ ...data, name: 'Shadcn' })));
 
 const arkUi = scrapeComponentLinks({
   url: 'https://ark-ui.com/react/docs/overview/introduction',
   base: 'https://ark-ui.com',
   linkSelector: 'aside > nav > ul > li:nth-child(3) > div > div > ul > li > a',
-}).pipe(
-  Effect.map((data) => ({ ...data, name: 'ArkUI' })),
-  Effect.orElseSucceed(() => null)
-);
+}).pipe(Effect.map((data) => ({ ...data, name: 'ArkUI' })));
 
 const zagJs = scrapeComponentLinks({
   url: 'https://zagjs.com/overview/introduction',
   base: 'https://zagjs.com',
   linkSelector: 'nav > ul > li:nth-child(2) > ul > li > a',
-}).pipe(
-  Effect.map((data) => ({ ...data, name: 'ZagJS' })),
-  Effect.orElseSucceed(() => null)
-);
+}).pipe(Effect.map((data) => ({ ...data, name: 'ZagJS' })));
 
 const nextUi = scrapeComponentLinks({
   url: 'https://nextui.org/docs/guide/introduction',
   base: 'https://nextui.org',
   linkSelector:
     '#app-container > main > div > div.hidden.overflow-visible.relative.z-10.lg\\:block.lg\\:col-span-2.mt-8.pr-4 > div > div > div > div > ul:nth-child(4) > div.flex.flex-col.gap-3.items-start > li > div > a',
-}).pipe(
-  Effect.map((data) => ({ ...data, name: 'Next UI' })),
-  Effect.orElseSucceed(() => null)
-);
+}).pipe(Effect.map((data) => ({ ...data, name: 'Next UI' })));
 
 const baseUi = scrapeComponentLinks({
   url: 'https://mui.com/base-ui/all-components/',
   base: 'https://mui.com',
   linkSelector:
     '#__next > div > nav > div > div > div.MuiBox-root > div > ul > li:nth-child(2) > div > div > div > ul > li > ul > li > a',
-}).pipe(
-  Effect.map((data) => ({ ...data, name: 'Base UI' })),
-  Effect.orElseSucceed(() => null)
-);
+}).pipe(Effect.map((data) => ({ ...data, name: 'Base UI' })));
 
 const arekUi = scrapeGithubDirectoryFileLinks({
   url: 'https://github.com/arekmaz/arek-ui/tree/main/app/components/ui',
@@ -145,8 +130,7 @@ const arekUi = scrapeGithubDirectoryFileLinks({
       name: splitCamelcase(name),
     })),
   })),
-  Effect.map((data) => ({ ...data, name: 'Arek UI' })),
-  Effect.orElseSucceed(() => null)
+  Effect.map((data) => ({ ...data, name: 'Arek UI' }))
 );
 
 const materialUi = scrapeComponentLinks({
@@ -164,8 +148,7 @@ const materialUi = scrapeComponentLinks({
           re.test(component.url)
         )
     ),
-  })),
-  Effect.orElseSucceed(() => null)
+  }))
 );
 
 const reactAria = scrapeComponentLinks({
@@ -180,8 +163,7 @@ const reactAria = scrapeComponentLinks({
       name: splitCamelcase(name),
     })),
   })),
-  Effect.map((data) => ({ ...data, name: 'React Aria' })),
-  Effect.orElseSucceed(() => null)
+  Effect.map((data) => ({ ...data, name: 'React Aria' }))
 );
 
 const parkUi = scrapeComponentLinks({
@@ -189,10 +171,7 @@ const parkUi = scrapeComponentLinks({
   base: 'https://park-ui.com',
   linkSelector:
     '#sidebar > astro-island:nth-child(1)> aside:nth-child(1) > nav:nth-child(1) > ul.d_flex > li:nth-child(4) > #collapsible\\:\\:r24R4\\: > #collapsible\\:\\:r24R4\\:\\:content > ul:nth-child(1) > li > a',
-}).pipe(
-  Effect.map((data) => ({ ...data, name: 'Park UI' })),
-  Effect.orElseSucceed(() => null)
-);
+}).pipe(Effect.map((data) => ({ ...data, name: 'Park UI' })));
 
 const reactBootstrap = scrapeComponentLinks({
   url: 'https://react-bootstrap.github.io/docs/components/accordion',
@@ -207,68 +186,48 @@ const reactBootstrap = scrapeComponentLinks({
       ...cmp,
       name: capitalizeSubsequentWords(name.replace(/s$/, '')),
     })),
-  })),
-  Effect.orElseSucceed(() => null)
+  }))
 );
 
 const antDesign = scrapeComponentLinks({
   url: 'https://ant.design/components/button',
   base: 'https://ant.design/',
-  linkSelector:
-    'div > section > ul > li > ul > li > span > a',
-}).pipe(
-  Effect.map((data) => ({ ...data, name: 'Ant Design' })),
-  Effect.orElseSucceed(() => null)
-);
+  linkSelector: 'div > section > ul > li > ul > li > span > a',
+}).pipe(Effect.map((data) => ({ ...data, name: 'Ant Design' })));
 
 const semanticUi = scrapeComponentLinks({
   url: 'https://semantic-ui.com/elements/button.html',
   base: 'https://semantic-ui.com',
   linkSelector:
     'div.toc > div:nth-child(1) > div:nth-child(n+7):nth-child(-n+10) > div:nth-child(2) > a',
-}).pipe(
-  Effect.map((data) => ({ ...data, name: 'Semantic UI' })),
-  Effect.orElseSucceed(() => null)
-);
+}).pipe(Effect.map((data) => ({ ...data, name: 'Semantic UI' })));
 
 const blueprintJs = scrapeComponentLinks({
   url: 'https://blueprintjs.com/docs/#core/components/buttons',
   base: 'https://blueprintjs.com',
   linkSelector:
     'div.docs-nav-wrapper > div.docs-nav > ul.docs-nav-menu:nth-child(7) > li:nth-child(2) > ul:nth-child(2) > li:nth-child(6)> ul:nth-child(2) > li > a.docs-nav-expanded',
-}).pipe(
-  Effect.map((data) => ({ ...data, name: 'Blueprint Js' })),
-  Effect.orElseSucceed(() => null)
-);
+}).pipe(Effect.map((data) => ({ ...data, name: 'Blueprint Js' })));
 
 const themeUi = scrapeComponentLinks({
   url: 'https://theme-ui.com/components/alert',
   base: 'https://theme-ui.com',
-  linkSelector:
-    'div.css-2bq4yr > ul > li:nth-child(11)> ul > li > a',
+  linkSelector: 'div.css-2bq4yr > ul > li:nth-child(11)> ul > li > a',
 }).pipe(
   Effect.map(({ components, ...rest }) => ({
     ...rest,
     name: 'Theme UI',
     components: components.filter(
-      (component) =>
-        ![/variants/].some((re) =>
-          re.test(component.url)
-        )
+      (component) => ![/variants/].some((re) => re.test(component.url))
     ),
-  })),
-  Effect.orElseSucceed(() => null)
+  }))
 );
 
 const chakraUi = scrapeComponentLinks({
   url: 'https://v2.chakra-ui.com/docs/components/accordion',
   base: 'https://v2.chakra-ui.com',
-  linkSelector:
-    'nav.sidebar-content > div > div > div > a',
-}).pipe(
-  Effect.map((data) => ({ ...data, name: 'Chakra UI' })),
-  Effect.orElseSucceed(() => null)
-);
+  linkSelector: 'nav.sidebar-content > div > div > div > a',
+}).pipe(Effect.map((data) => ({ ...data, name: 'Chakra UI' })));
 
 export const loader = loaderFunction(
   Effect.gen(function* () {
@@ -290,6 +249,14 @@ export const loader = loaderFunction(
       chakraUi,
     ].map((effect) =>
       effect.pipe(
+        Effect.map(({ components, ...rest }) => ({
+          ...rest,
+          components: components.map(({ name, ...c }) => ({
+            ...c,
+            name: name.trim(),
+          })),
+        })),
+        Effect.orElseSucceed(() => null),
         Effect.retry({
           schedule: Schedule.intersect(
             Schedule.jittered(Schedule.exponential('200 millis')),
