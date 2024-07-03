@@ -304,7 +304,7 @@ const semanticUi = scrapeComponentLinks({
 
 const blueprintJs = scrapeGithubDirectoryFolderLinks({
   url: 'https://github.com/palantir/blueprint/tree/develop/packages/core/src/components',
-  base: 'https://blueprintjs.com/docs',
+  base: 'https://blueprintjs.com/docs/',
   linkSelector:
     'table > tbody > tr > td.react-directory-row-name-cell-large-screen > div > div > div > div > a',
 }).pipe(
