@@ -528,8 +528,8 @@ export default function Index() {
       </thead>
       <tbody>
         {visibleComponents.map((component) => (
-          <tr key={component} className="relative -z-50">
-            <td className="sticky left-0 bg-white">{component}</td>
+          <tr key={component} className="relative hover:bg-stone-400/20">
+            <td className="sticky left-0 bg-white -z-50">{component}</td>
             {collections.map(({ components }, index) => {
               const matchingComponent = components.find(
                 (cmp) => cmp.name === component
