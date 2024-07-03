@@ -212,6 +212,18 @@ const headlessUi = scrapeComponentLinks({
   }))
 );
 
+const daisyUi = scrapeComponentLinks({
+  url: 'https://daisyui.com/components/',
+  base: 'https://daisyui.com/components/',
+  linkSelector: '.card-title',
+}).pipe(
+  Effect.map((data) => ({
+    ...data,
+    name: 'Daisy UI',
+    site: 'https://daisyui.com',
+  }))
+);
+
 const materialUi = scrapeComponentLinks({
   url: 'https://mui.com/material-ui/all-components/',
   base: 'https://mui.com',
@@ -381,6 +393,7 @@ export const loader = loaderFunction(
       themeUi,
       chakraUi,
       headlessUi,
+      daisyUi,
     ].map((effect) =>
       effect.pipe(
         Effect.map(({ components, ...rest }) => ({
