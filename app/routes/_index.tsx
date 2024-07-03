@@ -482,80 +482,78 @@ export default function Index() {
   const collections = loaderData.data;
 
   return (
-    <div className="font-sans p-4 flex flex-col gap-5">
-      <table className="text-center">
-        <thead className="sticky top-0 bg-white/90 py-2">
-          <tr>
-            <th className="sticky left-0 bg-white">
-              <input
-                value={searchPhrase}
-                onChange={(e) => {
-                  setSearchPhrase(e.target.value);
-                }}
-                placeholder="Search"
-                className="rounded-md border border-stone-600 px-1 py-2"
-                // eslint-disable-next-line jsx-a11y/no-autofocus
-                autoFocus
-              />
+    <table className="text-center">
+      <thead className="sticky top-0 bg-white/90 py-2">
+        <tr>
+          <th className="sticky left-0 top-0 bg-white z-50">
+            <input
+              value={searchPhrase}
+              onChange={(e) => {
+                setSearchPhrase(e.target.value);
+              }}
+              placeholder="Search"
+              className="rounded-md border border-stone-600 px-1 py-2"
+              // eslint-disable-next-line jsx-a11y/no-autofocus
+              autoFocus
+            />
+          </th>
+          {collections.map((collection) => (
+            <th key={collection.name}>
+              <div className="flex flex-col items-center gap-1 pt-1">
+                <a
+                  href={collection.site}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-lg/4"
+                >
+                  {collection.name}
+                </a>
+                <span className="text-xs text-stone-500 font-thin">
+                  {collection.components.length}
+                </span>
+              </div>
             </th>
-            {collections.map((collection) => (
-              <th key={collection.name}>
-                <div className="flex flex-col items-center gap-1">
+          ))}
+        </tr>
+        <tr className="text-stone-400">
+          <th className="text-black text-base sticky left-0 top-0 bg-white z-10">
+            Component
+          </th>
+          {collections.map((collection) => (
+            <th className="text-[8px] font-thin" key={collection.name}>
+              {collection.loadedAt}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {visibleComponents.map((component) => (
+          <tr key={component} className="relative -z-50">
+            <td className="sticky left-0 bg-white">{component}</td>
+            {collections.map(({ components }, index) => {
+              const matchingComponent = components.find(
+                (cmp) => cmp.name === component
+              );
+
+              if (!matchingComponent) {
+                return <td key={index}></td>;
+              }
+
+              return (
+                <td key={index}>
                   <a
-                    href={collection.site}
+                    href={matchingComponent.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-lg/4"
                   >
-                    {collection.name}
+                    {'✅'}
                   </a>
-                  <span className="text-xs text-stone-500 font-thin">
-                    {collection.components.length}
-                  </span>
-                </div>
-              </th>
-            ))}
+                </td>
+              );
+            })}
           </tr>
-          <tr className="text-stone-400">
-            <th className="text-black text-base sticky left-0 top-0 bg-white z-10">
-              Component
-            </th>
-            {collections.map((collection) => (
-              <th className="text-[8px] font-thin" key={collection.name}>
-                {collection.loadedAt}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {visibleComponents.map((component) => (
-            <tr key={component} className="hover:bg-stone-100">
-              <td className="sticky left-0 bg-white z-0">{component}</td>
-              {collections.map(({ components }, index) => {
-                const matchingComponent = components.find(
-                  (cmp) => cmp.name === component
-                );
-
-                if (!matchingComponent) {
-                  return <td key={index}></td>;
-                }
-
-                return (
-                  <td key={index}>
-                    <a
-                      href={matchingComponent.url}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {'✅'}
-                    </a>
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+        ))}
+      </tbody>
+    </table>
   );
 }
