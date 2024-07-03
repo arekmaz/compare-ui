@@ -1,6 +1,6 @@
 import type { MetaFunction } from '@remix-run/node';
 import { useLoaderData, useSearchParams } from '@remix-run/react';
-import { Effect, String } from 'effect';
+import { Effect, Schedule, String } from 'effect';
 import { JSDOM } from 'jsdom';
 import { loaderFunction } from '~/Remix.server';
 import { HttpClientRequest, HttpClientResponse } from '@effect/platform';
@@ -224,7 +224,17 @@ export const loader = loaderFunction(
       reactAria,
       parkUi,
       reactBootstrap,
-    ].map(Effect.cachedWithTTL(isDev ? 0 : '24 hours'));
+    ].map((effect) =>
+      effect.pipe(
+        Effect.retry({
+          schedule: Schedule.intersect(
+            Schedule.jittered(Schedule.exponential('200 millis')),
+            Schedule.recurs(5)
+          ),
+        }),
+        Effect.cachedWithTTL(isDev ? 0 : '24 hours')
+      )
+    );
 
     const cachedEffects = yield* Effect.all(collectionEffects);
 
