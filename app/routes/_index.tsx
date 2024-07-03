@@ -211,6 +211,16 @@ const reactBootstrap = scrapeComponentLinks({
   Effect.orElseSucceed(() => null)
 );
 
+const antDesign = scrapeComponentLinks({
+  url: 'https://ant.design/components/button',
+  base: 'https://ant.design/',
+  linkSelector:
+    'div > section > ul > li > ul > li > span > a',
+}).pipe(
+  Effect.map((data) => ({ ...data, name: 'Ant Design' })),
+  Effect.orElseSucceed(() => null)
+);
+
 export const loader = loaderFunction(
   Effect.gen(function* () {
     const collectionEffects = [
@@ -224,6 +234,7 @@ export const loader = loaderFunction(
       reactAria,
       parkUi,
       reactBootstrap,
+      antDesign,
     ].map((effect) =>
       effect.pipe(
         Effect.retry({
