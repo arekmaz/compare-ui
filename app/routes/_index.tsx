@@ -223,11 +223,21 @@ const antDesign = scrapeComponentLinks({
 
 const semanticUi = scrapeComponentLinks({
   url: 'https://semantic-ui.com/elements/button.html',
-  base: 'https://semantic-ui.com/',
+  base: 'https://semantic-ui.com',
   linkSelector:
     'div.toc > div:nth-child(1) > div:nth-child(n+7):nth-child(-n+10) > div:nth-child(2) > a',
 }).pipe(
   Effect.map((data) => ({ ...data, name: 'Semantic UI' })),
+  Effect.orElseSucceed(() => null)
+);
+
+const blueprintJs = scrapeComponentLinks({
+  url: 'https://blueprintjs.com/docs/#core/components/buttons',
+  base: 'https://blueprintjs.com',
+  linkSelector:
+    'div.docs-nav-wrapper > div.docs-nav > ul.docs-nav-menu:nth-child(7) > li:nth-child(2) > ul:nth-child(2) > li:nth-child(6)> ul:nth-child(2) > li > a.docs-nav-expanded',
+}).pipe(
+  Effect.map((data) => ({ ...data, name: 'Blueprint Js' })),
   Effect.orElseSucceed(() => null)
 );
 
@@ -246,6 +256,7 @@ export const loader = loaderFunction(
       reactBootstrap,
       antDesign,
       semanticUi,
+      blueprintJs,
     ].map((effect) =>
       effect.pipe(
         Effect.retry({
