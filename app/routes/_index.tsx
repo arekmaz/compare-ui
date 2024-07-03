@@ -241,6 +241,25 @@ const blueprintJs = scrapeComponentLinks({
   Effect.orElseSucceed(() => null)
 );
 
+const themeUi = scrapeComponentLinks({
+  url: 'https://theme-ui.com/components/alert',
+  base: 'https://theme-ui.com',
+  linkSelector:
+    'div.css-2bq4yr > ul > li:nth-child(11)> ul > li > a',
+}).pipe(
+  Effect.map(({ components, ...rest }) => ({
+    ...rest,
+    name: 'Theme UI',
+    components: components.filter(
+      (component) =>
+        ![/variants/].some((re) =>
+          re.test(component.url)
+        )
+    ),
+  })),
+  Effect.orElseSucceed(() => null)
+);
+
 export const loader = loaderFunction(
   Effect.gen(function* () {
     const collectionEffects = [
@@ -257,6 +276,7 @@ export const loader = loaderFunction(
       antDesign,
       semanticUi,
       blueprintJs,
+      themeUi,
     ].map((effect) =>
       effect.pipe(
         Effect.retry({
