@@ -11,6 +11,7 @@ export const loader = loaderFunction(
   Effect.gen(function* () {
     const collectionEffects = allScrapers.map((effect) =>
       effect.pipe(
+        Effect.filterOrFail(({ components }) => components.length > 0),
         Effect.map(({ components, ...rest }) => ({
           ...rest,
           components: components.map(({ name, ...c }) => ({
