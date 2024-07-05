@@ -265,6 +265,18 @@ const chakraUi = scrapeComponentLinks({
   }))
 );
 
+const seekOss = scrapeComponentLinks({
+  url: 'https://seek-oss.github.io/braid-design-system/components/Accordion',
+  base: 'https://seek-oss.github.io/braid-design-system/components/',
+  linkSelector: 'body > #app > div > div > div.yude8a6:nth-child(2) > div > div > div.yude86y:nth-child(5) > nav > div > div:nth-child(2) > ul > li > div > div > div > div > div > a > span:nth-child(4) > span',
+}).pipe(
+  Effect.map((data) => ({
+    ...data,
+    name: 'Seek-Oss',
+    site: 'https://seek-oss.github.io/braid-design-system/',
+  }))
+);
+
 export const allScrapers = [
   shadCn,
   arkUi,
@@ -283,4 +295,5 @@ export const allScrapers = [
   chakraUi,
   headlessUi,
   daisyUi,
+  seekOss,
 ];
