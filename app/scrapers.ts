@@ -2,6 +2,7 @@ import { Effect } from 'effect';
 import {
   capitalizeSubsequentWords,
   scrapeComponentLinks,
+  scrapeComponentLinksSeekOss,
   scrapeGithubDirectoryFileLinks,
   scrapeGithubDirectoryFolderLinks,
   splitCamelcase,
@@ -265,10 +266,11 @@ const chakraUi = scrapeComponentLinks({
   }))
 );
 
-const seekOss = scrapeComponentLinks({
+const seekOss = scrapeComponentLinksSeekOss({
   url: 'https://seek-oss.github.io/braid-design-system/components/Accordion',
   base: 'https://seek-oss.github.io/braid-design-system/components/',
-  linkSelector: 'body > #app > div > div > div.yude8a6:nth-child(2) > div > div > div.yude86y:nth-child(5) > nav > div > div:nth-child(2) > ul > li > div > div > div > div > div > a > span:nth-child(4) > span',
+  linkSelector:
+    'body > #app > div > div > div.yude8a6:nth-child(2) > div > div > div.yude86y:nth-child(5) > nav > div > div:nth-child(2) > ul > li > div > div > div > div > div > a > span:nth-child(4) > span',
 }).pipe(
   Effect.map((data) => ({
     ...data,

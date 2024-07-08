@@ -40,6 +40,33 @@ export const scrapeComponentLinks = ({
     })
   );
 
+export const scrapeComponentLinksSeekOss = ({
+  url,
+  base,
+  linkSelector,
+}: {
+  url: string;
+  linkSelector: string;
+  base: string;
+}) =>
+  HttpClientRequest.get(url).pipe(
+    HttpClientResponse.text,
+    Effect.map((text) => extractElements(text, linkSelector)),
+    Effect.map((elements) => {
+      const links = elements as HTMLLinkElement[];
+
+      const components = links.map((el) => {
+        const link = el;
+        return {
+          name: link.firstChild!.textContent!,
+          url: `${base}${link.firstChild!.textContent!}`,
+        };
+      });
+
+      return { loadedAt: new Date(), components };
+    })
+  );
+
 export const scrapeGithubDirectoryFileLinks = ({
   url,
   base,
