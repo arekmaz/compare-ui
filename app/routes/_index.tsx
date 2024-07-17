@@ -19,20 +19,23 @@ export const loader = loaderFunction(
             name: name.trim(),
           })),
         })),
-        Effect.orElseSucceed(() => null),
         Effect.retry({
           schedule: Schedule.intersect(
             Schedule.jittered(Schedule.exponential('200 millis')),
             Schedule.recurs(5)
           ),
         }),
+        Effect.orElseSucceed(() => null),
         Effect.cachedWithTTL(isDev ? 0 : '24 hours')
       )
     );
 
     const cachedEffects = yield* Effect.all(collectionEffects);
 
-    return Effect.all(cachedEffects, { concurrency: 'unbounded' }).pipe(
+    return Effect.all(
+      cachedEffects.map((effect) => Effect.orElseSucceed(effect, () => null)),
+      { concurrency: 'unbounded' }
+    ).pipe(
       Effect.map((data) =>
         data
           .filter((a) => a !== null)
