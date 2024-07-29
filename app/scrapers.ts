@@ -296,6 +296,19 @@ const radixUi = scrapeComponentLinks({
   }))
 );
 
+const fluent2Ui = scrapeComponentLinks({
+  url: 'https://fluent2.microsoft.design/components/web/react/accordion/usage',
+  base: 'https://fluent2.microsoft.design',
+  linkSelector:
+    'div.nav-main > div.main-list > div:nth-child(4) > div:nth-child(3) > div:nth-child(1) > div:nth-child(n+2) > a',
+}).pipe(
+  Effect.map((data) => ({
+    ...data,
+    name: 'Fluent 2 UI',
+    site: 'https://fluent2.microsoft.design/',
+  }))
+);
+
 export const allScrapers = [
   shadCn,
   arkUi,
@@ -316,4 +329,5 @@ export const allScrapers = [
   daisyUi,
   seekOss,
   radixUi,
+  fluent2Ui,
 ];
