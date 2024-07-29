@@ -6,7 +6,7 @@ import {
   scrapeGithubDirectoryFileLinks,
   scrapeGithubDirectoryFolderLinks,
   splitCamelcase,
-} from './scapingHelpers';
+} from './scrapingHelpers';
 
 const shadCn = scrapeComponentLinks({
   url: 'https://ui.shadcn.com/docs',
@@ -221,15 +221,16 @@ const semanticUi = scrapeComponentLinks({
 
 const blueprintJs = scrapeGithubDirectoryFolderLinks({
   url: 'https://github.com/palantir/blueprint/tree/develop/packages/core/src/components',
-  base: 'https://blueprintjs.com/docs/',
+  base: 'https://blueprintjs.com/docs/#core/components/',
   linkSelector:
     'table > tbody > tr > td.react-directory-row-name-cell-large-screen > div > div > div > div > a',
 }).pipe(
   Effect.map(({ components, ...rest }) => ({
     ...rest,
-    components: components.map(({ name, ...c }) => ({
+    components: components.map(({ name, url, ...c }) => ({
       ...c,
       name: splitCamelcase(name),
+      url: url.toLowerCase(),
     })),
   })),
   Effect.map((data) => ({
@@ -248,9 +249,12 @@ const themeUi = scrapeComponentLinks({
     ...rest,
     name: 'Theme UI',
     site: 'https://theme-ui.com',
-    components: components.filter(
-      (component) => ![/variants/].some((re) => re.test(component.url))
-    ),
+    components: components
+      .filter((component) => ![/variants/].some((re) => re.test(component.url)))
+      .map(({ name, ...c }) => ({
+        ...c,
+        name: splitCamelcase(name),
+      })),
   }))
 );
 
@@ -279,6 +283,19 @@ const seekOss = scrapeComponentLinksSeekOss({
   }))
 );
 
+const radixUi = scrapeComponentLinks({
+  url: 'https://www.radix-ui.com/themes/docs/components/alert-dialog',
+  base: 'https://www.radix-ui.com',
+  linkSelector:
+    '#__next > div > div.rt-Flex > div.rt-Box > div > div > div.rt-ScrollAreaViewport > div > div > div > div:nth-child(5) > a',
+}).pipe(
+  Effect.map((data) => ({
+    ...data,
+    name: 'Radix UI',
+    site: 'https://www.radix-ui.com',
+  }))
+);
+
 export const allScrapers = [
   shadCn,
   arkUi,
@@ -298,4 +315,5 @@ export const allScrapers = [
   headlessUi,
   daisyUi,
   seekOss,
+  radixUi,
 ];
