@@ -186,7 +186,7 @@ const reactBootstrap = scrapeComponentLinks({
 
 const antDesign = scrapeGithubDirectoryFolderLinks({
   url: 'https://github.com/ant-design/ant-design/tree/master/components',
-  base: 'https://ant.design/',
+  base: 'https://ant.design/components/',
   linkSelector:
     'table > tbody > tr > td.react-directory-row-name-cell-large-screen > div > div > div > div > a',
 }).pipe(
@@ -278,6 +278,10 @@ const seekOss = scrapeComponentLinksSeekOss({
 }).pipe(
   Effect.map((data) => ({
     ...data,
+    components: data.components.map((c) => ({
+      ...c,
+      name: splitCamelcase(c.name),
+    })),
     name: 'Seek-Oss',
     site: 'https://seek-oss.github.io/braid-design-system/',
   }))
@@ -296,14 +300,21 @@ const radixUi = scrapeComponentLinks({
   }))
 );
 
-const fluent2Ui = scrapeComponentLinks({
-  url: 'https://fluent2.microsoft.design/components/web/react/accordion/usage',
-  base: 'https://fluent2.microsoft.design',
+const fluent2Ui = scrapeGithubDirectoryFolderLinks({
+  url: 'https://github.com/microsoft/fluentui/tree/master/packages/react/src/components',
+  base: 'https://fluent2.microsoft.design/components/web/react/',
   linkSelector:
-    'div.nav-main > div.main-list > div:nth-child(4) > div:nth-child(3) > div:nth-child(1) > div:nth-child(n+2) > a',
+    'td.react-directory-row-name-cell-large-screen > div > div > div > div > a',
 }).pipe(
   Effect.map((data) => ({
     ...data,
+    components: data.components
+      .filter((c) => ['overview'].includes(c.name.toLowerCase()))
+      .map((comp) => ({
+        ...comp,
+        name: splitCamelcase(comp.name),
+        url: comp.url.toLowerCase() + '/usage',
+      })),
     name: 'Fluent 2 UI',
     site: 'https://fluent2.microsoft.design/',
   }))
