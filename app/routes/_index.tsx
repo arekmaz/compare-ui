@@ -147,24 +147,28 @@ export default function Index() {
       </thead>
       <tbody>
         {visibleComponents.map((component) => (
-          <tr key={component}>
-            <td className="sticky left-0 bg-white">{component}</td>
+          <tr key={component} className="group/row">
+            <td className="sticky left-0 bg-white group-hover/row:bg-stone-200">
+              {component}
+            </td>
             {collections.map(({ components }, index) => {
               const matchingComponent = components.find(
                 (cmp) => cmp.name === component
               );
 
               if (!matchingComponent) {
-                return <td key={index}></td>;
+                return (
+                  <td key={index} className="group-hover/row:bg-stone-200"></td>
+                );
               }
 
               return (
-                <td key={index}>
+                <td key={index} className="group-hover/row:bg-stone-200">
                   <a
                     href={matchingComponent.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="pointer-events-auto "
+                    className="pointer-events-auto"
                   >
                     {'✅'}
                   </a>

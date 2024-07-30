@@ -300,21 +300,173 @@ const radixUi = scrapeComponentLinks({
   }))
 );
 
-const fluent2Ui = scrapeGithubDirectoryFolderLinks({
-  url: 'https://github.com/microsoft/fluentui/tree/master/packages/react/src/components',
-  base: 'https://fluent2.microsoft.design/components/web/react/',
-  linkSelector:
-    'td.react-directory-row-name-cell-large-screen > div > div > div > div > a',
-}).pipe(
+const fluent2Ui = Effect.sync(() => ({
+  components: [
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/accordion/usage',
+      name: 'Accordion',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/avatar/usage',
+      name: 'Avatar',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/avatargroup/usage',
+      name: 'Avatar group',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/badge/usage',
+      name: 'Badge',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/breadcrumb/usage',
+      name: 'Breadcrumb',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/button/usage',
+      name: 'Button',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/card/usage',
+      name: 'Card',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/checkbox/usage',
+      name: 'Checkbox',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/combobox/usage',
+      name: 'Combobox',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/dialog/usage',
+      name: 'Dialog',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/divider/usage',
+      name: 'Divider',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/drawer/usage',
+      name: 'Drawer',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/dropdown/usage',
+      name: 'Dropdown',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/field/usage',
+      name: 'Field',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/fluentprovider/usage',
+      name: 'Fluent provider',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/icon/usage',
+      name: 'Icon',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/image/usage',
+      name: 'Image',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/infolabel/usage',
+      name: 'Info label',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/input/usage',
+      name: 'Input',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/label/usage',
+      name: 'Label',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/link/usage',
+      name: 'Link',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/menu/usage',
+      name: 'Menu',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/messagebar/usage',
+      name: 'Message bar',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/persona/usage',
+      name: 'Persona',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/popover/usage',
+      name: 'Popover',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/progressbar/usage',
+      name: 'Progress bar',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/radiogroup/usage',
+      name: 'Radio group',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/select/usage',
+      name: 'Select',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/skeleton/usage',
+      name: 'Skeleton',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/slider/usage',
+      name: 'Slider',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/spin/usage',
+      name: 'Spin button',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/spinner/usage',
+      name: 'Spinner',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/switch/usage',
+      name: 'Switch',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/tablist/usage',
+      name: 'Tablist',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/tag/usage',
+      name: 'Tag',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/text/usage',
+      name: 'Text',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/textarea/usage',
+      name: 'Textarea',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/toast/usage',
+      name: 'Toast',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/toolbar/usage',
+      name: 'Toolbar',
+    },
+    {
+      url: 'https://fluent2.microsoft.design/components/web/react/tooltip/usage',
+      name: 'Tooltip',
+    },
+  ],
+  loadedAt: new Date(),
+})).pipe(
   Effect.map((data) => ({
     ...data,
-    components: data.components
-      .filter((c) => !['overview'].includes(c.name.toLowerCase()))
-      .map((comp) => ({
-        ...comp,
-        name: splitCamelcase(comp.name),
-        url: comp.url.toLowerCase() + '/usage',
-      })),
     name: 'Fluent 2 UI',
     site: 'https://fluent2.microsoft.design/',
   }))
