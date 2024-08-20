@@ -472,19 +472,6 @@ const fluent2Ui = Effect.sync(() => ({
   }))
 );
 
-// const justDUi = scrapeComponentLinks({
-//   url: 'https://getjustd.com/docs/components/buttons/button',
-//   base: 'https://getjustd.com',
-//   linkSelector:
-//     'aside > div > div:nth-child(4) > section > div > div > div:nth-child(n+2) > section:nth-child(2) > div > a',
-// }).pipe(
-//   Effect.map((data) => ({
-//     ...data,
-//     name: 'Just D UI',
-//     site: 'https://getjustd.com',
-//   }))
-// );
-
 const justDUi = scrapeGithubDirectoryFileLinks({
   url: 'https://github.com/justdlabs/justd/tree/main/components/ui',
   base: 'https://getjustd.com/docs/components/buttons/',
