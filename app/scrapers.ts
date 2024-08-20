@@ -472,6 +472,26 @@ const fluent2Ui = Effect.sync(() => ({
   }))
 );
 
+const justDUi = scrapeGithubDirectoryFileLinks({
+  url: 'https://github.com/justdlabs/justd/tree/main/components/ui',
+  base: 'https://getjustd.com/docs/components/buttons/',
+  linkSelector:
+    'table > tbody > tr > td.react-directory-row-name-cell-large-screen > div > div > div > div > a',
+}).pipe(
+  Effect.map(({ components, ...rest }) => ({
+    ...rest,
+    components: components.map(({ name, ...c }) => ({
+      ...c,
+      name: splitCamelcase(name),
+    })),
+  })),
+  Effect.map((data) => ({
+    ...data,
+    name: 'Just D UI',
+    site: 'https://getjustd.com',
+  }))
+);
+
 export const allScrapers = [
   shadCn,
   arkUi,
@@ -493,4 +513,5 @@ export const allScrapers = [
   seekOss,
   radixUi,
   fluent2Ui,
+  justDUi,
 ];

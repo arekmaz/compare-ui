@@ -4,13 +4,29 @@ import { loaderFunction } from '~/Remix.server';
 import { useEffect, useMemo, useState, useTransition } from 'react';
 import { matchSorter } from 'match-sorter';
 import { allScrapers } from '~/scrapers';
+import { HttpClient } from '@effect/platform';
+import { NoSuchElementException } from 'effect/Cause';
+import { HttpClientError } from '@effect/platform/HttpClientError';
 
 const isDev = process.env.NODE_ENV === 'development';
 
 export const loader = loaderFunction(
   Effect.gen(function* () {
-    const collectionEffects = allScrapers.map((effect) =>
-      effect.pipe(
+    const cachedEffects: Effect.Effect<
+      {
+        components: {
+          name: string;
+          url: string;
+        }[];
+        name: string;
+        site: string;
+        loadedAt: Date;
+      } | null,
+      never
+    >[] = [];
+
+    for (const scraper of allScrapers) {
+      const [cached, invalidate] = yield* scraper.pipe(
         Effect.filterOrFail(({ components }) => components.length > 0),
         Effect.map(({ components, ...rest }) => ({
           ...rest,
@@ -25,12 +41,16 @@ export const loader = loaderFunction(
             Schedule.recurs(5)
           ),
         }),
-        Effect.orElseSucceed(() => null),
-        Effect.cachedWithTTL(isDev ? 0 : '24 hours')
-      )
-    );
+        Effect.cachedInvalidateWithTTL(isDev ? 0 : '24 hours')
+      );
 
-    const cachedEffects = yield* Effect.all(collectionEffects);
+      cachedEffects.push(
+        cached.pipe(
+          Effect.tapError(() => invalidate),
+          Effect.orElseSucceed(() => null)
+        )
+      );
+    }
 
     return Effect.all(
       cachedEffects.map((effect) => Effect.orElseSucceed(effect, () => null)),
